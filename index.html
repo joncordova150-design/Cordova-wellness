@@ -2,728 +2,632 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
   <title>Cordova Wellness</title>
-  <meta name="description" content="Local delivery of lab-tested, hemp-derived wellness products for adults 21+." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --bg:#000;
-      --fg:#f3f3f3;
-      --muted:#bdbdbd;
-      --card:#0b0b0b;
-      --line:rgba(255,255,255,.10);
-      --red:#ff2b2b;
-      --red2:#ff4b4b;
-      --shadow: 0 10px 30px rgba(0,0,0,.55);
-      --radius: 18px;
-      --btnRadius: 999px;
-      --max: 980px;
+      --text:#e9e9ef;
+      --muted:#a9a9b6;
+      --red:#ff2a2a;
+      --stroke:rgba(255,255,255,.06);
+      --shadow: 0 10px 35px rgba(0,0,0,.55);
+      --glow: 0 0 18px rgba(255,42,42,.35), 0 0 40px rgba(255,42,42,.18);
+      --radius:22px;
+      --radius2:18px;
+      --btnH:56px;
+      --safeB: env(safe-area-inset-bottom, 0px);
     }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      color:var(--fg);
+      font-family:"Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: var(--bg);
-      font-family: "Source Sans 3", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      line-height:1.25;
-      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+      color: var(--text);
       overflow-x:hidden;
     }
-
-    /* subtle spray texture */
-    .spray{
-      position:fixed;
-      inset:-40px;
+    body::before{
+      content:"";
+      position:fixed; inset:0;
       pointer-events:none;
-      opacity:.18;
+      opacity:.55;
       background:
-        radial-gradient(circle at 10% 20%, rgba(255,255,255,.10) 0 2px, transparent 3px),
-        radial-gradient(circle at 15% 25%, rgba(255,255,255,.08) 0 1px, transparent 2px),
-        radial-gradient(circle at 70% 30%, rgba(255,255,255,.07) 0 2px, transparent 3px),
-        radial-gradient(circle at 85% 70%, rgba(255,255,255,.08) 0 1px, transparent 2px),
-        radial-gradient(circle at 50% 90%, rgba(255,255,255,.06) 0 2px, transparent 3px);
-      filter: blur(.2px);
-      transform: rotate(-2deg);
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,.06) 0 1px, transparent 2px),
+        radial-gradient(circle at 70% 25%, rgba(255,255,255,.05) 0 1px, transparent 2px),
+        radial-gradient(circle at 30% 70%, rgba(255,255,255,.06) 0 1px, transparent 2px),
+        radial-gradient(circle at 85% 80%, rgba(255,255,255,.05) 0 1px, transparent 2px),
+        radial-gradient(circle at 45% 35%, rgba(255,42,42,.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 55% 55%, rgba(255,42,42,.08) 0 1px, transparent 2px);
+      mix-blend-mode: screen;
     }
+
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.55));
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .topbarInner{
+      max-width:520px;
+      margin: 0 auto;
+      padding: 14px 14px 12px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .brand{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .brand h1{
+      margin:0;
+      font-size: 28px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--red);
+      text-shadow: var(--glow);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brand p{
+      margin:0;
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.25;
+    }
+    .pillRow{display:flex;gap:10px;align-items:center;flex-shrink:0}
+    .pill{
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pill .dot{width:8px;height:8px;border-radius:50%;background: var(--red);box-shadow: var(--glow)}
+    .pillBtn{cursor:pointer}
 
     .wrap{
-      width:min(var(--max), calc(100% - 28px));
-      margin: 18px auto 22px;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 18px 14px calc(110px + var(--safeB));
     }
-
-    header{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      padding-top: 10px;
-    }
-
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .title{
-      font-weight:900;
-      letter-spacing:.3px;
-      font-size: 34px;
-      color: var(--red);
-      text-shadow: 0 0 18px rgba(255,43,43,.35);
-      margin:0;
-    }
-    .subtitle{
-      margin:0;
-      color: var(--muted);
-      font-size: 14.5px;
-      max-width: 52ch;
-    }
-
-    .pillRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:flex-end;
-      flex-wrap:wrap;
-      margin-top: 4px;
-    }
-
-    .pill{
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      color: var(--fg);
-      padding:10px 12px;
-      border-radius: var(--btnRadius);
-      box-shadow: var(--shadow);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .pill b{ font-weight:800; }
-    .toggle{
-      display:flex; gap:0;
-      overflow:hidden;
-      border-radius: var(--btnRadius);
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      box-shadow: var(--shadow);
-    }
-    .toggle button{
-      appearance:none;
-      border:0;
-      background:transparent;
-      color:var(--fg);
-      padding:10px 12px;
-      font-weight:800;
-      letter-spacing:.2px;
-    }
-    .toggle button.active{
-      background: rgba(255,43,43,.18);
-      color: #fff;
-      box-shadow: inset 0 0 0 1px rgba(255,43,43,.35);
-    }
-
-    .section{
-      margin-top: 18px;
-      padding: 14px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .section h2{
-      margin:0 0 8px 0;
-      font-size: 18px;
-      letter-spacing:.2px;
-    }
-    .section p{
-      margin:0;
-      color:var(--muted);
-      font-size: 14px;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-      margin-top: 14px;
-    }
-    @media (min-width: 780px){
-      .grid{ grid-template-columns: 1fr 1fr; }
-    }
-
-    .card{
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      border-radius: var(--radius);
-      overflow:hidden;
-      box-shadow: var(--shadow);
-      display:flex;
-      flex-direction:column;
-    }
-
-    .thumb{
-      width:100%;
-      aspect-ratio: 16 / 10;
-      background: #070707;
-      display:block;
-      object-fit: cover;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .cardBody{
-      padding: 14px;
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-    }
-
-    .row{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-    }
-
-    .name{
-      margin:0;
-      font-weight:900;
-      font-size: 18px;
-      letter-spacing:.2px;
-    }
-    .desc{
-      margin:0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height:1.25;
-    }
-
-    .price{
-      font-weight:900;
-      color:#fff;
-      white-space:nowrap;
-      font-size: 14px;
-      padding: 6px 10px;
-      border-radius: var(--btnRadius);
-      border:1px solid rgba(255,43,43,.35);
-      background: rgba(255,43,43,.12);
-      box-shadow: 0 0 18px rgba(255,43,43,.10);
-    }
-
-    .btnRow{
-      display:flex;
-      gap:10px;
-      margin-top: 2px;
-    }
-    .btn{
-      flex:1;
-      padding: 12px 14px;
-      border-radius: var(--btnRadius);
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.05);
-      color: var(--fg);
-      font-weight:900;
-      letter-spacing:.2px;
-      box-shadow: var(--shadow);
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn.primary{
-      border-color: rgba(255,43,43,.45);
-      background: linear-gradient(180deg, rgba(255,43,43,.22), rgba(255,43,43,.10));
-      box-shadow: 0 0 24px rgba(255,43,43,.16), var(--shadow);
-    }
-    .btn:active{ transform: translateY(1px); }
-
-    /* Sticky bottom bar */
-    .bar{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(0,0,0,.80);
-      border-top: 1px solid rgba(255,255,255,.10);
-      backdrop-filter: blur(10px);
-    }
-    .barInner{
-      width:min(var(--max), calc(100% - 8px));
-      margin:0 auto;
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-    .totalBox{
-      flex:1;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      border-radius: var(--radius);
-      padding: 12px 12px;
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .small{ font-size:12px; color:var(--muted); }
-    .total{
-      font-weight:900;
-      font-size: 18px;
-      letter-spacing:.2px;
-    }
-    .cta{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:stretch;
-      min-width: 168px;
-    }
-    .cta .btn{ width:100%; }
-
-    .cartList{
-      margin-top: 10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .cartItem{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-      border:1px dashed rgba(255,255,255,.14);
-      border-radius: 14px;
-      padding: 10px 10px;
-      background: rgba(255,255,255,.03);
-    }
-    .cartItem b{ font-weight:900; }
-    .qty{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .mini{
-      padding:8px 10px;
-      border-radius: 999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.05);
-      color:var(--fg);
-      font-weight:900;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
     .notice{
-      margin-top: 12px;
-      font-size: 12.5px;
-      color: var(--muted);
+      margin: 14px 0 8px;
+      padding: 12px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,42,42,.16), rgba(255,42,42,.06));
+      border: 1px solid rgba(255,42,42,.22);
+      box-shadow: var(--shadow);
+      color: rgba(255,255,255,.92);
+      font-size: 13.5px;
+      line-height: 1.25;
+    }
+    .notice strong{color:#fff}
+
+    .grid{display:flex;flex-direction:column;gap:14px;margin-top:12px}
+    .card{
+      border-radius: var(--radius);
+      overflow:hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+    }
+    .imgWrap{position:relative;height:210px;background:#07070a}
+    .imgWrap img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.05) contrast(1.05)}
+    .imgFade{
+      position:absolute;left:0;right:0;bottom:0;height:74px;
+      background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0));
+      pointer-events:none;
+    }
+    .content{
+      padding: 12px 12px 14px;
+      background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.55));
+    }
+    .row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .title{font-size:20px;font-weight:800;margin:0;line-height:1.1}
+    .desc{margin:6px 0 0;color:rgba(255,255,255,.78);font-size:14px;line-height:1.25;max-width:360px}
+    .priceBadge{
+      flex-shrink:0;border-radius:999px;padding:8px 12px;
+      border: 1px solid rgba(255,42,42,.35);
+      background: radial-gradient(circle at 30% 30%, rgba(255,42,42,.28), rgba(255,42,42,.10));
+      box-shadow: var(--glow);
+      font-weight: 900;
+      min-width: 92px;
+      text-align:center;
+    }
+    .actions{display:flex;gap:12px;margin-top:12px}
+    .btn{
+      height: var(--btnH);
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      color: var(--text);
+      font-weight: 900;
+      font-size: 16px;
+      flex: 1;
+      box-shadow: 0 14px 30px rgba(0,0,0,.35);
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active{transform: translateY(1px)}
+    .btnPrimary{
+      border: 1px solid rgba(255,42,42,.35);
+      background: radial-gradient(circle at 30% 30%, rgba(255,42,42,.28), rgba(255,42,42,.10));
+      box-shadow: var(--glow), 0 14px 30px rgba(0,0,0,.35);
+    }
+    .btnGhost{color: rgba(255,255,255,.82)}
+    .qty{margin-top:10px;display:flex;justify-content:space-between;color:var(--muted);font-weight:700;font-size:13px}
+
+    .bottomBar{
+      position: fixed;left:0;right:0;bottom:0;z-index:80;
+      padding: 10px 12px calc(10px + var(--safeB));
+      background: linear-gradient(to top, rgba(0,0,0,.96), rgba(0,0,0,.55));
+      border-top: 1px solid rgba(255,255,255,.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .bottomInner{max-width:520px;margin:0 auto;display:flex;gap:12px;align-items:stretch}
+    .totalCard{
+      flex:1;border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      padding: 10px 12px;
+      display:flex;flex-direction:column;justify-content:center;min-width:0;
+    }
+    .totalLabel{font-size:13px;color:var(--muted);font-weight:700;margin:0}
+    .totalValue{margin:2px 0 0;font-size:22px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .totalItems{margin:0;font-size:13px;color:rgba(255,255,255,.78);font-weight:700}
+    .ctaCol{width:180px;display:flex;flex-direction:column;gap:10px}
+    .cta{
+      height:52px;border-radius:999px;
+      border: 1px solid rgba(255,42,42,.35);
+      background: radial-gradient(circle at 30% 30%, rgba(255,42,42,.28), rgba(255,42,42,.10));
+      box-shadow: var(--glow), 0 14px 30px rgba(0,0,0,.35);
+      color: var(--text);
+      font-weight: 900;
+      font-size: 16px;
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ctaSecondary{
+      height:48px;border-radius:999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      color: rgba(255,255,255,.90);
+      font-weight: 900;
+      font-size: 15px;
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    a{ color: var(--red2); text-decoration:none; }
+    .tiny{
+      margin: 10px 2px 0;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      line-height: 1.2;
+      text-align:center;
+    }
+
+    .modalOverlay{
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.72);
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      z-index: 120;
+      padding: 12px 12px calc(12px + var(--safeB));
+    }
+    .modal{
+      width: min(520px, 100%);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(15,15,22,.96), rgba(0,0,0,.92));
+      box-shadow: 0 24px 70px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding: 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .modalTitle{margin:0;font-size:18px;font-weight:900}
+    .xBtn{
+      width: 40px;height:40px;border-radius:999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 900;
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .modalBody{padding: 14px;color: rgba(255,255,255,.85);font-size:14px;line-height:1.35}
+    .modalBody code{
+      background: rgba(255,255,255,.06);
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    @media (max-width: 430px){
+      .ctaCol{width:165px}
+      .imgWrap{height:200px}
+    }
   </style>
 </head>
+
 <body>
-  <div class="spray" aria-hidden="true"></div>
-
-  <div class="wrap">
-    <header>
+  <header class="topbar">
+    <div class="topbarInner">
       <div class="brand">
-        <h1 class="title" data-i18n="brand">Cordova Wellness</h1>
-        <p class="subtitle" data-i18n="tagline">
-          Local delivery of lab-tested, hemp-derived wellness products for adults 21+. Prices shown are starting points—final pricing may vary by strength and size.
-        </p>
+        <h1>Cordova Wellness</h1>
+        <p id="brandSub">Local delivery of lab-tested, hemp-derived wellness products for adults 21+.</p>
       </div>
-
       <div class="pillRow">
-        <div class="toggle" role="group" aria-label="Language toggle">
-          <button id="btnEN" class="active" type="button">EN</button>
-          <button id="btnES" type="button">ES</button>
-        </div>
-        <div class="pill"><span>🕒</span><b data-i18n="fast">Fast</b></div>
-        <div class="pill"><span>✅</span><b data-i18n="lab">Lab-tested</b></div>
+        <div class="pill"><span class="dot"></span><span id="statusText">Open</span></div>
+        <button class="pill pillBtn" id="langBtn">EN / ES</button>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <section class="section">
-      <h2 data-i18n="buildTitle">Build Order / Cart</h2>
-      <p data-i18n="buildDesc">Tap “Add” on an item. Your total updates live. When ready, text your order.</p>
+  <main class="wrap">
+    <div class="notice" id="notice">
+      <strong>21+ only.</strong> Hemp-derived products. Age verification required on delivery. No medical claims.
+    </div>
 
-      <div id="cart" class="cartList"></div>
+    <section class="grid" id="productGrid"></section>
 
-      <p class="notice" data-i18n="ageNote">
-        21+ only. Government ID required at delivery. No sales to minors.
-      </p>
-    </section>
+    <p class="tiny" id="footerTiny">
+      Questions? Tap <strong>Text order</strong> to send your cart to <strong>973-916-7374</strong>.
+    </p>
+  </main>
 
-    <section class="section">
-      <h2 data-i18n="menuTitle">Menu (Hemp-Derived)</h2>
-      <p data-i18n="menuDesc">No brands shown. Images are generic examples of the product type.</p>
-
-      <div id="grid" class="grid"></div>
-    </section>
-  </div>
-
-  <div class="bar">
-    <div class="barInner">
-      <div class="totalBox">
-        <div class="small" data-i18n="totalLabel">Live total</div>
-        <div class="total" id="total">$0.00</div>
-        <div class="small" id="itemCount">0 items</div>
+  <footer class="bottomBar">
+    <div class="bottomInner">
+      <div class="totalCard">
+        <p class="totalLabel" id="liveTotalLabel">Live total</p>
+        <p class="totalValue" id="totalValue">$0.00</p>
+        <p class="totalItems" id="totalItems">0 items</p>
       </div>
-
-      <div class="cta">
-        <button class="btn primary" id="btnText" type="button" data-i18n="textCTA">Text order</button>
-        <button class="btn" id="btnCopy" type="button" data-i18n="copyCTA">Copy message</button>
+      <div class="ctaCol">
+        <button class="cta" id="textOrderBtn">Text order</button>
+        <button class="ctaSecondary" id="copyBtn">Copy message</button>
       </div>
+    </div>
+  </footer>
+
+  <div class="modalOverlay" id="modalOverlay" aria-hidden="true">
+    <div class="modal">
+      <div class="modalHead">
+        <h3 class="modalTitle" id="modalTitle">Message copied</h3>
+        <button class="xBtn" id="modalClose">×</button>
+      </div>
+      <div class="modalBody" id="modalBody"></div>
     </div>
   </div>
 
-  <script>
-    // ========= UPDATE THESE FILENAMES TO MATCH YOUR UPLOADED IMAGES =========
-    // You said you uploaded: IMG_8911.png, IMG_8910.png, IMG_8909.png, IMG_8908.png
-    // Put them in the same folder as index.html (repo root).
-    const ITEMS = [
-      {
-        id: "gummies",
-        price: 25,
-        img: "IMG_8911.png",
-        en: { name: "CBD Gummies", desc: "Fruit gummies. Multiple strengths available. Lab-tested hemp-derived CBD." },
-        es: { name: "Gomitas de CBD", desc: "Gomitas frutales. Varios niveles de potencia. CBD derivado de cáñamo con pruebas de laboratorio." }
-      },
-      {
-        id: "vape",
-        price: 35,
-        img: "IMG_8910.png",
-        en: { name: "CBD Vape (Disposable)", desc: "Disposable vape. Flavors vary. Lab-tested hemp-derived cannabinoids." },
-        es: { name: "Vape de CBD (Desechable)", desc: "Vape desechable. Sabores varían. Cannabinoides derivados de cáñamo con pruebas de laboratorio." }
-      },
-      {
-        id: "preroll",
-        price: 15,
-        img: "IMG_8909.png",
-        en: { name: "Hemp Pre-Roll", desc: "Hemp-derived pre-roll option. Availability varies. Lab-tested." },
-        es: { name: "Pre-roll de Cáñamo", desc: "Opción de pre-roll derivado de cáñamo. Disponibilidad varía. Con pruebas de laboratorio." }
-      },
-      {
-        id: "tincture",
-        price: 30,
-        img: "IMG_8908.png",
-        en: { name: "CBD Tincture", desc: "Dropper bottle tincture. Strengths vary. Lab-tested hemp-derived CBD." },
-        es: { name: "Tintura de CBD", desc: "Frasco con gotero. Potencias varían. CBD derivado de cáñamo con pruebas de laboratorio." }
-      }
-    ];
+<script>
+(() => {
+  const PHONE = "9739167374";
 
-    const I18N = {
+  // ✅ LOCKED IMAGE MAPPING (correct to your screenshots)
+  const ITEMS = [
+    {
+      id: "gummies",
+      price: 25,
+      img: "IMG_8908.png", // gummies
+      en: { name: "CBD Gummies", desc: "Fruit gummies. Multiple strengths available. Lab-tested hemp-derived CBD." },
+      es: { name: "Gomitas de CBD", desc: "Gomitas frutales. Varias potencias. CBD de cáñamo probado en laboratorio." }
+    },
+    {
+      id: "vape",
+      price: 35,
+      img: "IMG_8911.png", // vape
+      en: { name: "CBD Vape (Disposable)", desc: "Disposable vape. Flavors vary. Lab-tested hemp-derived cannabinoids." },
+      es: { name: "Vape de CBD (Desechable)", desc: "Vape desechable. Sabores varían. Cannabinoides de cáñamo probados en laboratorio." }
+    },
+    {
+      id: "preroll",
+      price: 15,
+      img: "IMG_8910.png", // pre-roll
+      en: { name: "Hemp Pre-Roll", desc: "Hemp-derived pre-roll option. Availability varies. Lab-tested." },
+      es: { name: "Pre-roll de Cáñamo", desc: "Opción de pre-roll derivado de cáñamo. Disponibilidad varía. Probado en laboratorio." }
+    },
+    {
+      id: "tincture",
+      price: 30,
+      img: "IMG_8909.png", // tincture
+      en: { name: "CBD Tincture", desc: "Dropper bottle tincture. Strengths vary. Lab-tested hemp-derived CBD." },
+      es: { name: "Tintura de CBD", desc: "Tintura en gotero. Potencias varían. CBD de cáñamo probado en laboratorio." }
+    }
+  ];
+
+  const state = {
+    lang: localStorage.getItem("cw_lang") || "en",
+    cart: loadCart()
+  };
+
+  const grid = document.getElementById("productGrid");
+  const totalValueEl = document.getElementById("totalValue");
+  const totalItemsEl = document.getElementById("totalItems");
+  const textOrderBtn = document.getElementById("textOrderBtn");
+  const copyBtn = document.getElementById("copyBtn");
+  const langBtn = document.getElementById("langBtn");
+
+  const brandSub = document.getElementById("brandSub");
+  const notice = document.getElementById("notice");
+  const footerTiny = document.getElementById("footerTiny");
+  const liveTotalLabel = document.getElementById("liveTotalLabel");
+
+  const modalOverlay = document.getElementById("modalOverlay");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  const modalClose = document.getElementById("modalClose");
+
+  function vibe(ms=18){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){} }
+  function money(n){ return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(n); }
+
+  function loadCart(){
+    try{ return JSON.parse(localStorage.getItem("cw_cart") || "{}"); }
+    catch(e){ return {}; }
+  }
+  function saveCart(){ localStorage.setItem("cw_cart", JSON.stringify(state.cart)); }
+
+  function cartQty(id){ return state.cart[id] || 0; }
+  function setQty(id, qty){
+    if(qty <= 0) delete state.cart[id];
+    else state.cart[id] = qty;
+    saveCart();
+  }
+
+  function total(){
+    let t=0, count=0;
+    for(const item of ITEMS){
+      const q = cartQty(item.id);
+      if(q){ t += q * item.price; count += q; }
+    }
+    return { t, count };
+  }
+
+  function t(key){
+    const dict = {
       en: {
-        brand: "Cordova Wellness",
-        tagline: "Local delivery of lab-tested, hemp-derived wellness products for adults 21+. Prices shown are starting points—final pricing may vary by strength and size.",
-        fast: "Fast",
-        lab: "Lab-tested",
-        buildTitle: "Build Order / Cart",
-        buildDesc: "Tap “Add” on an item. Your total updates live. When ready, text your order.",
-        ageNote: "21+ only. Government ID required at delivery. No sales to minors.",
-        menuTitle: "Menu (Hemp-Derived)",
-        menuDesc: "No brands shown. Images are generic examples of the product type.",
+        sub: "Local delivery of lab-tested, hemp-derived wellness products for adults 21+.",
+        notice: "<strong>21+ only.</strong> Hemp-derived products. Age verification required on delivery. No medical claims.",
+        liveTotal: "Live total",
+        items: (n)=> `${n} item${n===1?"":"s"}`,
         add: "Add",
         remove: "Remove",
-        emptyCart: "Your cart is empty. Add items below.",
-        totalLabel: "Live total",
-        textCTA: "Text order",
-        copyCTA: "Copy message",
-        copied: "Copied!",
-        itemsWord: "items",
-        itemWord: "item",
-        messageHeader: "Order request:",
-        messageFooter: "Name: \nAddress: \nDelivery window: \nID ready (21+): Yes\nNotes:"
+        textOrder: "Text order",
+        copy: "Copy message",
+        copied: "Message copied",
+        emptyCart: "Your cart is empty. Add at least one item.",
+        copiedHint: "Paste this into a text message to <code>973-916-7374</code>:",
+        orderTitle: "Cordova Wellness order",
+        ageLine: "I confirm I am 21+.",
+        deliveryLine: "Delivery area: Newark/Kearny area (local).",
+        footer: "Questions? Tap <strong>Text order</strong> to send your cart to <strong>973-916-7374</strong>."
       },
       es: {
-        brand: "Cordova Wellness",
-        tagline: "Entrega local de productos de bienestar derivados del cáñamo y con pruebas de laboratorio para adultos 21+. Los precios son desde—pueden variar por potencia y tamaño.",
-        fast: "Rápido",
-        lab: "Con pruebas",
-        buildTitle: "Carrito / Pedido",
-        buildDesc: "Toca “Agregar” en un artículo. El total se actualiza en vivo. Cuando estés listo, envía el pedido por texto.",
-        ageNote: "Solo 21+. Se requiere identificación al entregar. No se vende a menores.",
-        menuTitle: "Menú (Derivado del Cáñamo)",
-        menuDesc: "Sin marcas. Las imágenes son ejemplos genéricos del tipo de producto.",
+        sub: "Entrega local de productos de bienestar de cáñamo, probados en laboratorio, para adultos 21+.",
+        notice: "<strong>Solo 21+.</strong> Productos derivados de cáñamo. Verificación de edad requerida en la entrega. Sin afirmaciones médicas.",
+        liveTotal: "Total en vivo",
+        items: (n)=> `${n} artículo${n===1?"":"s"}`,
         add: "Agregar",
         remove: "Quitar",
-        emptyCart: "Tu carrito está vacío. Agrega artículos abajo.",
-        totalLabel: "Total en vivo",
-        textCTA: "Enviar texto",
-        copyCTA: "Copiar mensaje",
-        copied: "¡Copiado!",
-        itemsWord: "artículos",
-        itemWord: "artículo",
-        messageHeader: "Solicitud de pedido:",
-        messageFooter: "Nombre: \nDirección: \nHorario de entrega: \nID listo (21+): Sí\nNotas:"
+        textOrder: "Enviar por texto",
+        copy: "Copiar mensaje",
+        copied: "Mensaje copiado",
+        emptyCart: "Tu carrito está vacío. Agrega al menos un artículo.",
+        copiedHint: "Pega esto en un mensaje de texto a <code>973-916-7374</code>:",
+        orderTitle: "Pedido Cordova Wellness",
+        ageLine: "Confirmo que tengo 21+.",
+        deliveryLine: "Área de entrega: zona Newark/Kearny (local).",
+        footer: "¿Preguntas? Toca <strong>Enviar por texto</strong> para mandar tu carrito a <strong>973-916-7374</strong>."
       }
     };
+    return dict[state.lang][key];
+  }
 
-    const PHONE = "9739167374";
+  function buildMessage(){
+    const lines = [];
+    lines.push(`✅ ${t("orderTitle")}`);
+    lines.push(t("ageLine"));
+    lines.push(t("deliveryLine"));
+    lines.push("");
+    lines.push("Items:");
 
-    // --- Haptics (works on iPhone) ---
-    function haptic(ms=12){
-      try{ if (navigator.vibrate) navigator.vibrate(ms); }catch(e){}
+    let subtotal = 0;
+    for(const item of ITEMS){
+      const q = cartQty(item.id);
+      if(!q) continue;
+      const label = state.lang === "en" ? item.en.name : item.es.name;
+      lines.push(`- ${label} x${q} (${money(item.price)} each)`);
+      subtotal += q * item.price;
     }
 
-    let lang = "en";
-    const cart = new Map(); // id -> qty
+    lines.push("");
+    lines.push(`Total: ${money(subtotal)}`);
+    lines.push("");
+    lines.push("Name:");
+    lines.push("Address (or meet-up spot):");
+    lines.push("Preferred time:");
+    return lines.join("\n");
+  }
 
-    const gridEl = document.getElementById("grid");
-    const cartEl = document.getElementById("cart");
-    const totalEl = document.getElementById("total");
-    const itemCountEl = document.getElementById("itemCount");
-    const btnText = document.getElementById("btnText");
-    const btnCopy = document.getElementById("btnCopy");
+  function openSMS(message){
+    const encoded = encodeURIComponent(message);
+    const a = document.createElement("a");
+    a.href = `sms:${PHONE}&body=${encoded}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => {
+      const b = document.createElement("a");
+      b.href = `sms:${PHONE}?&body=${encoded}`;
+      document.body.appendChild(b);
+      b.click();
+      b.remove();
+    }, 250);
+  }
 
-    const btnEN = document.getElementById("btnEN");
-    const btnES = document.getElementById("btnES");
+  function showModal(title, bodyHtml){
+    modalTitle.textContent = title;
+    modalBody.innerHTML = bodyHtml;
+    modalOverlay.style.display = "flex";
+    modalOverlay.setAttribute("aria-hidden","false");
+  }
+  function hideModal(){
+    modalOverlay.style.display = "none";
+    modalOverlay.setAttribute("aria-hidden","true");
+  }
 
-    function money(n){ return "$" + n.toFixed(2); }
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
 
-    function t(key){
-      return (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : key;
+  function render(){
+    brandSub.textContent = t("sub");
+    notice.innerHTML = t("notice");
+    liveTotalLabel.textContent = t("liveTotal");
+    textOrderBtn.textContent = t("textOrder");
+    copyBtn.textContent = t("copy");
+    footerTiny.innerHTML = t("footer");
+
+    grid.innerHTML = "";
+
+    for(const item of ITEMS){
+      const qty = cartQty(item.id);
+      const langObj = state.lang === "en" ? item.en : item.es;
+
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="imgWrap">
+          <img src="${item.img}" alt="${escapeHtml(langObj.name)}" loading="lazy" />
+          <div class="imgFade"></div>
+        </div>
+
+        <div class="content">
+          <div class="row">
+            <div>
+              <h2 class="title">${escapeHtml(langObj.name)}</h2>
+              <p class="desc">${escapeHtml(langObj.desc)}</p>
+            </div>
+            <div class="priceBadge">${money(item.price)}</div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btnPrimary" data-action="add" data-id="${item.id}">${t("add")}</button>
+            <button class="btn btnGhost" data-action="remove" data-id="${item.id}">${t("remove")}</button>
+          </div>
+
+          <div class="qty">
+            <span>${state.lang === "en" ? "In cart" : "En carrito"}:</span>
+            <span><strong>${qty}</strong></span>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
     }
 
-    function applyI18n(){
-      document.documentElement.lang = lang;
-      document.querySelectorAll("[data-i18n]").forEach(el=>{
-        const key = el.getAttribute("data-i18n");
-        el.textContent = t(key);
-      });
-      btnEN.classList.toggle("active", lang==="en");
-      btnES.classList.toggle("active", lang==="es");
+    const { t: tot, count } = total();
+    totalValueEl.textContent = money(tot);
+    totalItemsEl.textContent = t("items")(count);
 
-      renderGrid();
-      renderCart();
-    }
-
-    function renderGrid(){
-      gridEl.innerHTML = "";
-      ITEMS.forEach(item=>{
-        const card = document.createElement("div");
-        card.className = "card";
-
-        const img = document.createElement("img");
-        img.className = "thumb";
-        img.alt = (item[lang]?.name || item.en.name);
-        img.src = item.img;
-        img.loading = "lazy";
-        img.onerror = () => {
-          // If image doesn't load, show a fallback block
-          img.style.display = "none";
-          const fallback = document.createElement("div");
-          fallback.className = "thumb";
-          fallback.style.display = "grid";
-          fallback.style.placeItems = "center";
-          fallback.style.color = "rgba(255,255,255,.45)";
-          fallback.style.fontWeight = "900";
-          fallback.textContent = "Image not found";
-          card.prepend(fallback);
-        };
-
-        const body = document.createElement("div");
-        body.className = "cardBody";
-
-        const row = document.createElement("div");
-        row.className = "row";
-
-        const left = document.createElement("div");
-        const name = document.createElement("p");
-        name.className = "name";
-        name.textContent = item[lang].name;
-
-        const desc = document.createElement("p");
-        desc.className = "desc";
-        desc.textContent = item[lang].desc;
-
-        left.appendChild(name);
-        left.appendChild(desc);
-
-        const price = document.createElement("div");
-        price.className = "price";
-        price.textContent = money(item.price);
-
-        row.appendChild(left);
-        row.appendChild(price);
-
-        const btnRow = document.createElement("div");
-        btnRow.className = "btnRow";
-
-        const addBtn = document.createElement("button");
-        addBtn.className = "btn primary";
-        addBtn.type = "button";
-        addBtn.textContent = t("add");
-        addBtn.addEventListener("click", ()=>{
-          haptic();
-          cart.set(item.id, (cart.get(item.id)||0) + 1);
-          renderCart();
-        });
-
-        const removeBtn = document.createElement("button");
-        removeBtn.className = "btn";
-        removeBtn.type = "button";
-        removeBtn.textContent = t("remove");
-        removeBtn.addEventListener("click", ()=>{
-          haptic();
-          const q = cart.get(item.id)||0;
-          if(q<=1) cart.delete(item.id);
-          else cart.set(item.id, q-1);
-          renderCart();
-        });
-
-        btnRow.appendChild(addBtn);
-        btnRow.appendChild(removeBtn);
-
-        body.appendChild(row);
-        body.appendChild(btnRow);
-
-        card.appendChild(img);
-        card.appendChild(body);
-
-        gridEl.appendChild(card);
-      });
-    }
-
-    function cartTotals(){
-      let total = 0;
-      let count = 0;
-      cart.forEach((qty, id)=>{
-        const item = ITEMS.find(x=>x.id===id);
-        if(!item) return;
-        count += qty;
-        total += item.price * qty;
-      });
-      return {total, count};
-    }
-
-    function renderCart(){
-      cartEl.innerHTML = "";
-
-      if(cart.size === 0){
-        const empty = document.createElement("div");
-        empty.className = "cartItem";
-        empty.innerHTML = `<span>${t("emptyCart")}</span>`;
-        cartEl.appendChild(empty);
-      }else{
-        cart.forEach((qty, id)=>{
-          const item = ITEMS.find(x=>x.id===id);
-          if(!item) return;
-
-          const line = document.createElement("div");
-          line.className = "cartItem";
-
-          const left = document.createElement("div");
-          left.innerHTML = `<b>${item[lang].name}</b><div class="small">${money(item.price)} each</div>`;
-
-          const right = document.createElement("div");
-          right.className = "qty";
-
-          const minus = document.createElement("button");
-          minus.className = "mini";
-          minus.type = "button";
-          minus.textContent = "−";
-          minus.addEventListener("click", ()=>{
-            haptic();
-            const q = cart.get(id)||0;
-            if(q<=1) cart.delete(id);
-            else cart.set(id, q-1);
-            renderCart();
-          });
-
-          const qEl = document.createElement("div");
-          qEl.style.minWidth = "28px";
-          qEl.style.textAlign = "center";
-          qEl.style.fontWeight = "900";
-          qEl.textContent = qty;
-
-          const plus = document.createElement("button");
-          plus.className = "mini";
-          plus.type = "button";
-          plus.textContent = "+";
-          plus.addEventListener("click", ()=>{
-            haptic();
-            cart.set(id, (cart.get(id)||0) + 1);
-            renderCart();
-          });
-
-          right.appendChild(minus);
-          right.appendChild(qEl);
-          right.appendChild(plus);
-
-          line.appendChild(left);
-          line.appendChild(right);
-          cartEl.appendChild(line);
-        });
-      }
-
-      const {total, count} = cartTotals();
-      totalEl.textContent = money(total);
-
-      const word = (count === 1) ? t("itemWord") : t("itemsWord");
-      itemCountEl.textContent = `${count} ${word}`;
-
-      // Update CTA enabled state
-      btnText.disabled = (count === 0);
-      btnCopy.disabled = (count === 0);
-      btnText.style.opacity = btnText.disabled ? .6 : 1;
-      btnCopy.style.opacity = btnCopy.disabled ? .6 : 1;
-    }
-
-    function buildMessage(){
-      const lines = [];
-      lines.push(t("messageHeader"));
-      cart.forEach((qty, id)=>{
-        const item = ITEMS.find(x=>x.id===id);
-        if(!item) return;
-        lines.push(`- ${item[lang].name} x${qty} (${money(item.price)} ea)`);
-      });
-      const {total} = cartTotals();
-      lines.push(`Total: ${money(total)}`);
-      lines.push("");
-      lines.push(t("messageFooter"));
-      return lines.join("\n");
-    }
-
-    btnText.addEventListener("click", ()=>{
-      haptic();
-      const msg = buildMessage();
-      const url = `sms:${PHONE}&body=${encodeURIComponent(msg)}`;
-      window.location.href = url;
+    grid.querySelectorAll("button[data-action]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        vibe(12);
+        const id = btn.getAttribute("data-id");
+        const action = btn.getAttribute("data-action");
+        const cur = cartQty(id);
+        if(action === "add") setQty(id, cur + 1);
+        else setQty(id, cur - 1);
+        render();
+      }, {passive:true});
     });
+  }
 
-    btnCopy.addEventListener("click", async ()=>{
-      haptic();
-      const msg = buildMessage();
+  langBtn.addEventListener("click", () => {
+    vibe(10);
+    state.lang = state.lang === "en" ? "es" : "en";
+    localStorage.setItem("cw_lang", state.lang);
+    render();
+  }, {passive:true});
+
+  textOrderBtn.addEventListener("click", () => {
+    vibe(16);
+    const { count } = total();
+    if(!count){ showModal("Heads up", escapeHtml(t("emptyCart"))); return; }
+    openSMS(buildMessage());
+  }, {passive:true});
+
+  copyBtn.addEventListener("click", async () => {
+    vibe(16);
+    const { count } = total();
+    if(!count){ showModal("Heads up", escapeHtml(t("emptyCart"))); return; }
+
+    const msg = buildMessage();
+    let ok = false;
+    try{
+      await navigator.clipboard.writeText(msg);
+      ok = true;
+    }catch(e){
       try{
-        await navigator.clipboard.writeText(msg);
-        const prev = btnCopy.textContent;
-        btnCopy.textContent = t("copied");
-        setTimeout(()=>btnCopy.textContent = prev, 900);
-      }catch(e){
-        // Fallback
         const ta = document.createElement("textarea");
         ta.value = msg;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
         document.body.appendChild(ta);
         ta.select();
-        document.execCommand("copy");
+        ok = document.execCommand("copy");
         ta.remove();
-        const prev = btnCopy.textContent;
-        btnCopy.textContent = t("copied");
-        setTimeout(()=>btnCopy.textContent = prev, 900);
-      }
-    });
+      }catch(e2){}
+    }
 
-    btnEN.addEventListener("click", ()=>{ haptic(); lang="en"; applyI18n(); });
-    btnES.addEventListener("click", ()=>{ haptic(); lang="es"; applyI18n(); });
+    if(ok){
+      showModal(t("copied"),
+        `${t("copiedHint")}<br><br>
+         <div style="white-space:pre-wrap;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:10px;border-radius:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12.5px;line-height:1.25;">
+         ${escapeHtml(msg)}
+         </div>`
+      );
+    }else{
+      showModal("Copy failed", "Your browser blocked clipboard access. Long-press and select the message inside the box to copy.");
+    }
+  });
 
-    // init
-    renderGrid();
-    renderCart();
-    applyI18n();
-  </script>
+  modalClose.addEventListener("click", () => { vibe(8); hideModal(); }, {passive:true});
+  modalOverlay.addEventListener("click", (e) => {
+    if(e.target === modalOverlay){ vibe(8); hideModal(); }
+  });
+
+  render();
+})();
+</script>
 </body>
 </html>
